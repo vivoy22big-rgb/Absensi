@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Absensi Kehadiran</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: #020617;
+      padding: 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 0 20px rgba(0,0,0,.5);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 14px;
+      text-align: center;
+      color: #cbd5f5;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    input {
+      background: #020617;
+      border: 1px solid #334155;
+      color: white;
+    }
+    button {
+      background: #6366f1;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+    .info {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h1>Absensi Kehadiran</h1>
+  <p>Absensi hanya dapat diisi pukul <b>06.00 – 21.00 WIB</b></p>
+
+  <input type="text" id="nama" placeholder="Masukkan nama Anda">
+
+  <button id="btn" onclick="absen()">Absen Sekarang</button>
+
+  <div class="info" id="info"></div>
+</div>
+
+<script>
+  const COOLDOWN = 60 * 60 * 1000; // 1 jam
+
+  function absen() {
+    const nama = document.getElementById("nama").value.trim();
+    const info = document.getElementById("info");
+
+    if (!nama) {
+      info.innerHTML = "⚠️ Nama wajib diisi";
+      return;
+    }
+
+    const now = new Date();
+    const jam = now.getHours();
+
+    // Batas waktu absensi
+    if (jam < 6 || jam >= 21) {
+      info.innerHTML = "Absensi ditutup (06.00–21.00 WIB)";
+      return;
+    }
+
+    const last = localStorage.getItem("absen_" + nama);
+
+    if (last && now - new Date(last) < COOLDOWN) {
+      info.innerHTML = "Kamu sudah absen. Tunggu cooldown selesai.";
+      return;
+    }
+
+    localStorage.setItem("absen_" + nama, now);
+    info.innerHTML = "Absensi berhasil pada " + now.toLocaleTimeString();
+    document.getElementById("btn").disabled = true;
+  }
+</script>
+
+</body>
+</html>
